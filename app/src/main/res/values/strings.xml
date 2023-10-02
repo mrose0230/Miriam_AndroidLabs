@@ -2,4 +2,9 @@
     <string name="app_name">Miriam\'s Android Labs</string>
     <string name="hello_message">Hello world!</string>
     <string name="button_message">I\'m a button</string>
+    <string name="SpinFlag" />
+    <string name="spin_message">SpinFlag</string>
+    <string name="button2">Button 2</string>
+    <string name="button3">Button 3</string>
+    <string name="button1">Button 1</string>
 </resources>
