@@ -50,7 +50,8 @@ public class ChatRoom extends AppCompatActivity {
         messages = chatModel.messages.getValue();
         if(messages == null) {
             chatModel.messages.postValue(messages = new ArrayList<>());
-
+            MessageDatabase db = Room.databaseBuilder(getApplicationContext(), MessageDatabase.class, "database-name").build();
+            mDao = db.cmDAO();
             Executor thread = Executors.newSingleThreadExecutor();
             thread.execute(() -> {
 
@@ -60,14 +61,15 @@ public class ChatRoom extends AppCompatActivity {
             });
         }
 
-        MessageDatabase db = Room.databaseBuilder(getApplicationContext(), MessageDatabase.class, "database-name").build();
-        mDao = db.cmDAO();
 
 
+        Executor thread = Executors.newSingleThreadExecutor();
+        thread.execute(() -> {
 
-            List<ChatMessage> fromDatabase = mDao.getAllMessages();//return a List
-            messages.addAll(fromDatabase);//this adds all messages from the database
 
+                    List<ChatMessage> fromDatabase = mDao.getAllMessages();//return a List
+                    messages.addAll(fromDatabase);//this adds all messages from the database
+                });
         myAdapter = new RecyclerView.Adapter<MyRowHolder>() {
             @NonNull
             @Override
@@ -108,8 +110,8 @@ public class ChatRoom extends AppCompatActivity {
             SimpleDateFormat sdf = new SimpleDateFormat("EEEE, dd-MMM-yyyy hh-mm-ss a");
             String currentDateandTime = sdf.format(new Date());
             algonquin.cst2335.rose0230.ChatMessage chatMessage = new algonquin.cst2335.rose0230.ChatMessage(textInput, currentDateandTime, true);
-            Executor thread = Executors.newSingleThreadExecutor();
-            thread.execute(() -> mDao.insertMessage(chatMessage));
+            Executor thread1 = Executors.newSingleThreadExecutor();
+            thread1.execute(() -> mDao.insertMessage(chatMessage));
             messages.add(chatMessage);
             myAdapter.notifyItemInserted(messages.size() - 1);
             binding.textInput.setText("");
@@ -122,8 +124,8 @@ public class ChatRoom extends AppCompatActivity {
             SimpleDateFormat sdf = new SimpleDateFormat("EEEE, dd-MMM-yyyy hh-mm-ss a");
             String currentDateandTime = sdf.format(new Date());
             algonquin.cst2335.rose0230.ChatMessage chatMessage = new algonquin.cst2335.rose0230.ChatMessage(textInput, currentDateandTime, false);
-            Executor thread = Executors.newSingleThreadExecutor();
-            thread.execute(() -> mDao.insertMessage(chatMessage));
+            Executor thread2 = Executors.newSingleThreadExecutor();
+            thread2.execute(() -> mDao.insertMessage(chatMessage));
             messages.add(chatMessage);
             myAdapter.notifyItemInserted(messages.size() - 1);
             binding.textInput.setText("");
