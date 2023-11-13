@@ -1,16 +1,34 @@
 package algonquin.cst2335.rose0230;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity
 public class ChatMessage {
 
+    @PrimaryKey(autoGenerate = true) //the database will increment them for us
+    @ColumnInfo(name="id")
+    long id;
+
+
+    @ColumnInfo(name="MessageColumn")
     String message;
+    @ColumnInfo(name="TimeSentColumn")
     String timeSent;
-    boolean isSentButton;
+
+    @ColumnInfo(name="SendRecieveColumn")
+    boolean sentOrReceive;
 
 
-    void ChatRoom(String m, String t, boolean sent) {
-        message = m;
-        timeSent = t;
-        isSentButton = sent;
+    boolean isSent;
+
+
+    public ChatMessage() { }
+    public ChatMessage(String m, String tm, boolean sr){
+        message= m;
+        timeSent = tm;
+        sentOrReceive = sr;
     }
     public String getMessage() {
         return message;
@@ -21,6 +39,7 @@ public class ChatMessage {
     }
 
     public boolean isSentButton() {
-        return isSentButton;
+        return isSent;
     }
+
 }

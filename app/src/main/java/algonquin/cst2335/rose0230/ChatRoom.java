@@ -1,23 +1,34 @@
 package algonquin.cst2335.rose0230;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import androidx.room.Room;
 
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import algonquin.cst2335.rose0230.databinding.ActivityChatRoomBinding;
 import algonquin.cst2335.rose0230.databinding.RecMessageBinding;
 import algonquin.cst2335.rose0230.databinding.SentMessageBinding;
+
 
 public class ChatRoom extends AppCompatActivity {
 
@@ -27,6 +38,8 @@ public class ChatRoom extends AppCompatActivity {
 
     ChatRoomViewModel chatModel ;
 
+    ChatMessageDAO mDao;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,13 +47,26 @@ public class ChatRoom extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         chatModel = new ViewModelProvider(this).get(ChatRoomViewModel.class);
-
         messages = chatModel.messages.getValue();
-        if(messages == null)
-        {
-            chatModel.messages.postValue( messages = new ArrayList<>());
+        if(messages == null) {
+            chatModel.messages.postValue(messages = new ArrayList<>());
+
+            Executor thread = Executors.newSingleThreadExecutor();
+            thread.execute(() -> {
+
+                messages.addAll(mDao.getAllMessages()); //Once you get the data from database
+
+                runOnUiThread(() -> binding.recycleView.setAdapter(myAdapter));
+            });
         }
 
+        MessageDatabase db = Room.databaseBuilder(getApplicationContext(), MessageDatabase.class, "database-name").build();
+        mDao = db.cmDAO();
+
+
+
+            List<ChatMessage> fromDatabase = mDao.getAllMessages();//return a List
+            messages.addAll(fromDatabase);//this adds all messages from the database
 
         myAdapter = new RecyclerView.Adapter<MyRowHolder>() {
             @NonNull
@@ -81,8 +107,9 @@ public class ChatRoom extends AppCompatActivity {
             String textInput = binding.textInput.getText().toString();
             SimpleDateFormat sdf = new SimpleDateFormat("EEEE, dd-MMM-yyyy hh-mm-ss a");
             String currentDateandTime = sdf.format(new Date());
-            ChatMessage chatMessage = new ChatMessage(textInput, currentDateandTime, true);
-
+            algonquin.cst2335.rose0230.ChatMessage chatMessage = new algonquin.cst2335.rose0230.ChatMessage(textInput, currentDateandTime, true);
+            Executor thread = Executors.newSingleThreadExecutor();
+            thread.execute(() -> mDao.insertMessage(chatMessage));
             messages.add(chatMessage);
             myAdapter.notifyItemInserted(messages.size() - 1);
             binding.textInput.setText("");
@@ -94,8 +121,9 @@ public class ChatRoom extends AppCompatActivity {
             String textInput = binding.textInput.getText().toString();
             SimpleDateFormat sdf = new SimpleDateFormat("EEEE, dd-MMM-yyyy hh-mm-ss a");
             String currentDateandTime = sdf.format(new Date());
-            ChatMessage chatMessage = new ChatMessage(textInput, currentDateandTime, false);
-
+            algonquin.cst2335.rose0230.ChatMessage chatMessage = new algonquin.cst2335.rose0230.ChatMessage(textInput, currentDateandTime, false);
+            Executor thread = Executors.newSingleThreadExecutor();
+            thread.execute(() -> mDao.insertMessage(chatMessage));
             messages.add(chatMessage);
             myAdapter.notifyItemInserted(messages.size() - 1);
             binding.textInput.setText("");
@@ -109,12 +137,50 @@ public class ChatRoom extends AppCompatActivity {
 
         public MyRowHolder(@NonNull View itemView) {
             super(itemView);
+
+            itemView.setOnClickListener(click-> {
+            int rowNum = getAbsoluteAdapterPosition();
+            ChatMessage toDelete = messages.get(rowNum);
+            AlertDialog.Builder builder = new AlertDialog.Builder(ChatRoom.this);
+
+                builder.setNegativeButton("No" , (btn, obj)->{ /* if no is clicked */  }  );
+                builder.setMessage("Do you want to delete this message?");
+                builder.setTitle("Delete");
+
+                builder.setPositiveButton("Yes", (p1, p2)-> {
+                    /*is yes is clicked*/
+                    Executor thread1 = Executors.newSingleThreadExecutor();
+                    thread1.execute(( ) -> {
+                        //delete from database
+                        mDao.deleteThisMessage(toDelete);//which chat message to delete?
+
+        });
+                    messages.remove(rowNum);//remove from the array list
+                    myAdapter.notifyDataSetChanged();//redraw the list
+
+
+                    //give feedback:anything on screen
+                    Snackbar.make( itemView , "You deleted the row", Snackbar.LENGTH_LONG)
+                            .setAction("Undo", (btn) -> {
+                                Executor thread2 = Executors.newSingleThreadExecutor();
+                                thread2.execute(( ) -> {
+                                    mDao.insertMessage(toDelete);
+                                });
+
+                                messages.add(rowNum, toDelete);
+                                myAdapter.notifyDataSetChanged();//redraw the list
+                            })
+                            .show();
+                });
+
+                builder.create().show(); //this has to be last
+            });
             messageText = itemView.findViewById(R.id.messageText);
-            timeText = itemView.findViewById(R.id.timeText);
+           timeText = itemView.findViewById(R.id.timeText);
         }
     }
 
-    class ChatMessage {
+    /*class ChatMessage {
         String message;
         String timeSent;
         boolean isSent;
@@ -123,6 +189,8 @@ public class ChatRoom extends AppCompatActivity {
             this.message = message;
             this.timeSent = timeSent;
             this.isSent = isSent;
-        }
+        }*/
+
+
     }
-}
+
