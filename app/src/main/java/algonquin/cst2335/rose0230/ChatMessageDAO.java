@@ -11,11 +11,11 @@ import java.util.List;
 public interface ChatMessageDAO {
 
     @Insert //id                 //@Entity
-    void insertMessage(ChatMessage m); //for inserting
+    public long insertMessage(ChatMessage m); //for inserting
 
     @Query("Select * from ChatMessage;")
     public List<ChatMessage> getAllMessages();
 
     @Delete //number of rows deleted
-    void deleteThisMessage(ChatMessage m); //delete this message  by id
+    public int deleteThisMessage(ChatMessage m); //delete this message  by id
 }

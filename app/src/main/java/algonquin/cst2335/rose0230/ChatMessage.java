@@ -17,7 +17,7 @@ public class ChatMessage {
     @ColumnInfo(name="TimeSentColumn")
     String timeSent;
 
-    @ColumnInfo(name="SendRecieveColumn")
+    @ColumnInfo(name="SendReceiveColumn")
     boolean sentOrReceive;
 
 
