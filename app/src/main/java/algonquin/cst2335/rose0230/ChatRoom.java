@@ -134,10 +134,10 @@ public class ChatRoom extends AppCompatActivity {
                         holder.timeText.setText(forRow.timeSent);
                     }
 
-                    @Override
+                    @Override //fatal error here, null pointer exception
                     public int getItemCount() {
 
-                        //fatal error here
+
                         return messages.size();
 
                     }
@@ -202,8 +202,8 @@ public class ChatRoom extends AppCompatActivity {
             });
 
 
-               message = itemView.findViewById(R.id.message);
-               time = itemView.findViewById(R.id.time);
+               messageText = itemView.findViewById(R.id.messageText);
+               timeText = itemView.findViewById(R.id.timeText);
 //find ids from xml to java
 
         }
