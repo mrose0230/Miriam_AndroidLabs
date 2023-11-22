@@ -34,7 +34,7 @@ import algonquin.cst2335.rose0230.databinding.SentMessageBinding;
 
 public class ChatRoom extends AppCompatActivity {
 
-    ArrayList<ChatMessage> messages = new ArrayList<>();
+    ArrayList<ChatMessage> messages = null;
     ActivityChatRoomBinding binding;
     RecyclerView.Adapter myAdapter =null;
     ChatMessageDAO mDao;  //declare dao
@@ -62,6 +62,7 @@ public class ChatRoom extends AppCompatActivity {
 
         chatModel.selectedMessage.observe(this, selectedMessage -> {
             if(selectedMessage !=null){
+
                 MessageDetailsFragment newMessage = new MessageDetailsFragment(selectedMessage);
 
                 FragmentManager fMgr = getSupportFragmentManager();
