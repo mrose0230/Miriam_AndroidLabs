@@ -1,5 +1,7 @@
 package algonquin.cst2335.rose0230;
 
+import static android.app.ProgressDialog.show;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,9 +17,12 @@ import androidx.room.Room;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -53,6 +58,8 @@ public class ChatRoom extends AppCompatActivity {
         binding = ActivityChatRoomBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        //onCreateOptionsMenu is called
+        setSupportActionBar(binding.myToolbar);
         chatModel = new ViewModelProvider(this).get(ChatRoomViewModel.class);
         //example code doesn't have the getValue() part
         messages = chatModel.messages.getValue();
@@ -140,6 +147,78 @@ if(selectedMessage !=null){
 
             binding.recycleView.setLayoutManager(new LinearLayoutManager(this));
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+//inflate menu into the toolbar
+        getMenuInflater().inflate(R.menu.my_menu, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch( item.getItemId() )
+        {
+            case R.id.item_1:
+
+                //put your ChatMessage deletion code here. If you select this item, you should show the alert dialog
+                //asking if the user wants to delete this message.
+                AlertDialog.Builder builder = new AlertDialog.Builder( ChatRoom.this );
+
+                builder.setNegativeButton("No" , (btn, obj)->{ //if no is clicked
+
+                }  );
+                builder.setMessage("Do you want to delete this message?");
+                builder.setTitle("Delete");
+
+                builder.setPositiveButton("Yes", (p1, p2)-> {
+                    //if yes is clicked
+                    Executor thread1 = Executors.newSingleThreadExecutor();
+                    thread1.execute(( ) -> {
+                        //delete from database
+                        mDao.deleteThisMessage(toDelete);//which chat message to delete?
+
+                    });
+                    messages.remove(position);//remove from the array list
+                    myAdapter.notifyDataSetChanged();//redraw the list
+
+
+                    //give feedback:anything on screen
+                    Snackbar.make( itemView , "You deleted the row", Snackbar.LENGTH_LONG)
+                            .setAction("Undo", (btn) -> {
+                                Executor thread2 = Executors.newSingleThreadExecutor();
+                                thread2.execute(( ) -> {
+                                    mDao.insertMessage(toDelete);
+                                });
+
+
+                                messages.add(position, toDelete);
+                                myAdapter.notifyDataSetChanged();//redraw the list
+                            })
+                            .show();
+                });
+
+                builder.create().show(); //this has to be last
+
+
+
+                break;
+
+            case R.id.item_2:
+                Toast.makeText(this, "Version 1.0 created by Miriam", Toast.LENGTH_LONG),show();
+
+                break;
+        }
+
+        return true;
+    }
+
+    private Object show() {
+        return null;
+    }
     /////
 
     class MyRowHolder extends RecyclerView.ViewHolder {
@@ -159,9 +238,9 @@ if(selectedMessage !=null){
 
             });
 
-              // message = itemView.findViewById(R.id.message);
-             //  time = itemView.findViewById(R.id.time);
-//find ids from xml to java
+               message = itemView.findViewById(R.id.message);
+              time = itemView.findViewById(R.id.time);
+                //find ids from xml to java
 
         }
    }
