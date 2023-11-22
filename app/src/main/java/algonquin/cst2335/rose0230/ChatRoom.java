@@ -208,7 +208,7 @@ if(selectedMessage !=null){
                 break;
 
             case R.id.item_2:
-                Toast.makeText(this, "Version 1.0 created by Miriam", Toast.LENGTH_LONG),show();
+                Toast.makeText(this, "Version 1.0 created by Miriam", Toast.LENGTH_LONG);show();
 
                 break;
         }
@@ -238,8 +238,8 @@ if(selectedMessage !=null){
 
             });
 
-               message = itemView.findViewById(R.id.message);
-              time = itemView.findViewById(R.id.time);
+               messageText = itemView.findViewById(R.id.messageText);
+              timeText = itemView.findViewById(R.id.timeText);
                 //find ids from xml to java
 
         }
