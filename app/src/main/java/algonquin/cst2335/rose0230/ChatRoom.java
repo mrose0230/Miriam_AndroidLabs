@@ -137,7 +137,6 @@ public class ChatRoom extends AppCompatActivity {
                     @Override //fatal error here, null pointer exception
                     public int getItemCount() {
 
-
                         return messages.size();
 
                     }
