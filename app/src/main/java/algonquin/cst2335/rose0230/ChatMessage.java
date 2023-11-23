@@ -20,10 +20,6 @@ public class ChatMessage {
     @ColumnInfo(name="SendReceiveColumn")
     boolean sentOrReceive;
 
-
-    boolean isSent;
-
-
     public ChatMessage() { }
     public ChatMessage(String m, String tm, boolean sr){
         message= m;
@@ -38,8 +34,8 @@ public class ChatMessage {
         return timeSent;
     }
 
-    public boolean isSentButton() {
-        return isSent;
+   // public boolean isSentButton() {
+      //  return isSent;
     }
 
-}
+

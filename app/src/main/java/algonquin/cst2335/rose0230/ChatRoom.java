@@ -34,32 +34,36 @@ import algonquin.cst2335.rose0230.databinding.SentMessageBinding;
 
 public class ChatRoom extends AppCompatActivity {
 
-    ArrayList<ChatMessage> messages = null;
+    ArrayList<ChatMessage> messages = null;;
     ActivityChatRoomBinding binding;
     RecyclerView.Adapter myAdapter =null;
     ChatMessageDAO mDao;  //declare dao
     ChatRoomViewModel chatModel;
 
 
-    //this is called when we click the back arrow
+    //this is called when we click the back arrow, sets the selected message to null
    @Override
    public void onBackPressed(){
        chatModel.selectedMessage.postValue(null);
        super.onBackPressed();
    }
 
+
+   //sets up the UI and data
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //sets up bindings and ViewModel
         binding = ActivityChatRoomBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         chatModel = new ViewModelProvider(this).get(ChatRoomViewModel.class);
 
-        //example code doesn't have the getValue() part
-        messages = chatModel.messages.getValue();
+        //could add  getValue() part to the end
+        messages = chatModel.messages;
 
+        //observe changes to selectedMessage, handles fragments
         chatModel.selectedMessage.observe(this, selectedMessage -> {
             if(selectedMessage !=null){
 
@@ -87,6 +91,7 @@ public class ChatRoom extends AppCompatActivity {
 
         //end of loading from db
 
+        // on click listener for the send button, handles when new messages are sent
         binding.sendButton.setOnClickListener(click -> {
             String textInput = binding.textInput.getText().toString();
             SimpleDateFormat sdf = new SimpleDateFormat("EEEE, dd-MMM-yyyy hh-mm-ss a");
@@ -106,9 +111,10 @@ public class ChatRoom extends AppCompatActivity {
             });
         });
 
+
+        //sets up the recycler view adapter and layout, this is what displays the list of messages
         binding.recycleView.setAdapter(
                 myAdapter= new RecyclerView.Adapter<MyRowHolder>(){
-                    /////////////////////
                     @NonNull
                     @Override
                     public MyRowHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType){
@@ -138,14 +144,17 @@ public class ChatRoom extends AppCompatActivity {
                     @Override //fatal error here, null pointer exception
                     public int getItemCount() {
 
-                        return messages.size();
+                       // return messages.size();
+                        //should fix the null pointer...
+                        return (messages != null) ? messages.size() : 0;
 
                     }
                 });
 
         binding.recycleView.setLayoutManager(new LinearLayoutManager(this));
     }
-    /////
+
+    //my row holder class holds references to the text views
 
     class MyRowHolder extends RecyclerView.ViewHolder {
         public TextView messageText;
@@ -154,6 +163,7 @@ public class ChatRoom extends AppCompatActivity {
         public MyRowHolder(@NonNull View itemView) {
             super(itemView);
 
+            //handles what happens when a message is clicked
             itemView.setOnClickListener(click -> {
                 int position = getAbsoluteAdapterPosition();
                 ChatMessage toDelete = messages.get(position);
@@ -201,7 +211,7 @@ public class ChatRoom extends AppCompatActivity {
 
             });
 
-
+//finds and assigns text views based on the layout files
                messageText = itemView.findViewById(R.id.messageText);
                timeText = itemView.findViewById(R.id.timeText);
 //find ids from xml to java
