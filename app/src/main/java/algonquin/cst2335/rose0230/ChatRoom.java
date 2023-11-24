@@ -38,7 +38,8 @@ import algonquin.cst2335.rose0230.databinding.RecMessageBinding;
 import algonquin.cst2335.rose0230.databinding.SentMessageBinding;
 
 public class ChatRoom extends AppCompatActivity {
-
+        int position ;
+    ChatMessage toDelete;
     ArrayList<ChatMessage> messages =null;
     ActivityChatRoomBinding binding;
     RecyclerView.Adapter myAdapter =null;
@@ -187,7 +188,7 @@ if(selectedMessage !=null){
 
 
                     //give feedback:anything on screen
-                    Snackbar.make( itemView , "You deleted the row", Snackbar.LENGTH_LONG)
+                    Snackbar.make( binding.recButton , "You deleted the row", Snackbar.LENGTH_LONG)
                             .setAction("Undo", (btn) -> {
                                 Executor thread2 = Executors.newSingleThreadExecutor();
                                 thread2.execute(( ) -> {
@@ -229,8 +230,8 @@ if(selectedMessage !=null){
             super(itemView);
 
             itemView.setOnClickListener(click -> {
-                int position = getAbsoluteAdapterPosition();
-                ChatMessage toDelete = messages.get(position);
+                position = getAbsoluteAdapterPosition();
+                 toDelete = messages.get(position);
 
                 if(chatModel.selectedMessage.getValue()==null)
                 //this starts the loading
