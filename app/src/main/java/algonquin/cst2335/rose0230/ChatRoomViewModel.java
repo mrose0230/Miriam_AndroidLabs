@@ -14,5 +14,5 @@ public class ChatRoomViewModel extends ViewModel {
    // public ArrayList<ChatMessage> messages = new MutableLiveData< >();
     public MutableLiveData<ChatMessage> selectedMessage = new MutableLiveData< >();
 
-    public ArrayList<ChatMessage> messages;
+    public ArrayList<ChatMessage> messages= new ArrayList<>() ;
 }
