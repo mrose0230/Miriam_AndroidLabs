@@ -2,52 +2,44 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycleView"
+        app:layout_constraintTop_toTopOf="parent"
         android:layout_width="320dp"
-        android:layout_height="0dp"
-        tools:layout_editor_absoluteX="-9dp"
-        tools:layout_editor_absoluteY="404dp" />
+        android:layout_height="0dp" />
 
     <EditText
         android:id="@+id/latInput"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="28dp"
-        android:hint="enter latitude here"
-        app:layout_constraintBottom_toStartOf="longInput"
-        app:layout_constraintBottom_toTopOf="@+id/longInput"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.421"
-        tools:layout_editor_absoluteX="3dp"></EditText>
+        android:hint="enter latitude here" />
 
     <EditText
         android:id="@+id/longInput"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="enter longitude here"
-        app:layout_constraintTop_toBottomOf="latInput"
-        tools:layout_editor_absoluteY="135dp" />
+        app:layout_constraintTop_toBottomOf="latInput"/>
 
     <Button
         android:id="@+id/sendButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="136dp"
+        android:layout_marginTop="48dp"
         android:text="Lookup"
         app:layout_constraintTop_toBottomOf="@+id/longInput"
-        tools:layout_editor_absoluteX="30dp" />
+     />
 
     <Button
         android:id="@+id/saveButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save"
-        tools:layout_editor_absoluteX="202dp"
-        tools:layout_editor_absoluteY="258dp" />
+        android:text="Save"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
