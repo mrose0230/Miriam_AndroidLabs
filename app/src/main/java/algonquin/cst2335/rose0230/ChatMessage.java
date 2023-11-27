@@ -38,8 +38,8 @@ public class ChatMessage {
         return timeSent;
     }
 
-    public boolean isSentButton() {
-        return isSent;
+   // public boolean isSentButton() {
+     //   return isSent;
     }
 
-}
+

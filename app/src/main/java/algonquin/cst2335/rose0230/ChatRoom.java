@@ -63,7 +63,7 @@ public class ChatRoom extends AppCompatActivity {
         setSupportActionBar(binding.myToolbar);
         chatModel = new ViewModelProvider(this).get(ChatRoomViewModel.class);
         //example code doesn't have the getValue() part
-        messages = chatModel.messages.getValue();
+        messages = chatModel.messages;
 
         chatModel.selectedMessage.observe(this, selectedMessage -> {
 if(selectedMessage !=null){
@@ -84,7 +84,6 @@ if(selectedMessage !=null){
         //load all messages from the DB
             Executor thread=Executors.newSingleThreadExecutor();
             thread.execute(() -> {
-
         List<ChatMessage> fromDatabase = mDao.getAllMessages();//return list
         messages.addAll(fromDatabase);//all messaged from db are added
 
@@ -188,7 +187,7 @@ if(selectedMessage !=null){
 
 
                     //give feedback:anything on screen
-                    Snackbar.make( binding.recButton , "You deleted the row", Snackbar.LENGTH_LONG)
+                    Snackbar.make( binding.sendButton , "You deleted the row", Snackbar.LENGTH_LONG)
                             .setAction("Undo", (btn) -> {
                                 Executor thread2 = Executors.newSingleThreadExecutor();
                                 thread2.execute(( ) -> {
