@@ -7,8 +7,8 @@
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/myToolbar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="411dp"
+        android:layout_height="67dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -17,39 +17,38 @@
         android:id="@+id/recycleView"
         android:layout_width="320dp"
         android:layout_height="0dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/sendButton" />
+        app:layout_constraintTop_toBottomOf="@+id/textInput" />
 
     <EditText
         android:id="@+id/textInput"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
         android:hint="enter message here"
-        app:layout_constraintTop_toBottomOf="@id/myToolbar"
-        app:layout_constraintEnd_toStartOf="@+id/recButton"
-        app:layout_constraintStart_toEndOf="@+id/sendButton"></EditText>
+        app:layout_constraintStart_toEndOf="@+id/sendButton"
+        app:layout_constraintTop_toBottomOf="@+id/myToolbar"></EditText>
 
     <Button
         android:id="@+id/sendButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:text="send"
-        app:layout_constraintTop_toBottomOf="@id/myToolbar"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintBottom_toTopOf="@+id/recycleView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/myToolbar" />
 
-  <!--  <Button
-        android:id="@+id/recButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="receive"
+    <FrameLayout
+        android:id="@+id/fragmentLocation"
+        android:layout_width="339dp"
+        android:layout_height="372dp"
+        android:layout_marginTop="64dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textInput" />-->
-
-
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recycleView" />
 </androidx.constraintlayout.widget.ConstraintLayout>

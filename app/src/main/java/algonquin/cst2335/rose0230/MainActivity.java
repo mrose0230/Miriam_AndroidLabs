@@ -9,13 +9,19 @@ import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.Switch;
 
+import algonquin.cst2335.rose0230.databinding.ActivityMainBinding;
+
 public class MainActivity extends AppCompatActivity {
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        //setContentView(R.layout.activity_main);
+
+        ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
     }
 
 

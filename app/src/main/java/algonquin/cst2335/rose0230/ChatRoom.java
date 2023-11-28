@@ -43,7 +43,7 @@ public class ChatRoom extends AppCompatActivity {
     ArrayList<ChatMessage> messages =null;
     ActivityChatRoomBinding binding;
     RecyclerView.Adapter myAdapter =null;
-    ChatMessageDAO mDao;
+    ChatMessageDAO mDAO;
     ChatRoomViewModel chatModel;
 
    @Override
@@ -62,7 +62,6 @@ public class ChatRoom extends AppCompatActivity {
         //onCreateOptionsMenu is called
         setSupportActionBar(binding.myToolbar);
         chatModel = new ViewModelProvider(this).get(ChatRoomViewModel.class);
-        //example code doesn't have the getValue() part
         messages = chatModel.messages;
 
         chatModel.selectedMessage.observe(this, selectedMessage -> {
@@ -79,12 +78,12 @@ if(selectedMessage !=null){
 
         //below is to load messages from the DB
             MessageDatabase db = Room.databaseBuilder(getApplicationContext(), MessageDatabase.class, "database-name").build();
-            mDao = db.cmDAO(); //initializes the variable
+            mDAO = db.cmDAO(); //initializes the variable
 
         //load all messages from the DB
             Executor thread=Executors.newSingleThreadExecutor();
             thread.execute(() -> {
-        List<ChatMessage> fromDatabase = mDao.getAllMessages();//return list
+        List<ChatMessage> fromDatabase = mDAO.getAllMessages();//return list
         messages.addAll(fromDatabase);//all messaged from db are added
 
     });
@@ -105,7 +104,7 @@ if(selectedMessage !=null){
         Executor thread1 = Executors.newSingleThreadExecutor();
         thread1.execute(() -> {
 
-            mDao.insertMessage(thisMessage);
+            mDAO.insertMessage(thisMessage);
             Log.d("TAG", "The id created is:" + thisMessage.id);
         });
     });
@@ -163,56 +162,45 @@ if(selectedMessage !=null){
         switch( item.getItemId() )
         {
             case R.id.item_1:
+ChatMessage selectedMessage = chatModel.selectedMessage.getValue();
+//check if selected message is null
+                if (selectedMessage !=null){
+                    int position = messages.indexOf(selectedMessage);
+                    if (position != -1) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                        builder.setMessage("Do you want to delete the message? " + selectedMessage.getMessage())
+                                .setTitle("Delete")
+                                .setPositiveButton("Yes", (dialogI, cl) -> {
+                                    ChatMessage m = messages.get(position);
+                                    messages.remove(position);
+                                    myAdapter.notifyItemRemoved(position);
 
-                //put your ChatMessage deletion code here. If you select this item, you should show the alert dialog
-                //asking if the user wants to delete this message.
-                AlertDialog.Builder builder = new AlertDialog.Builder( ChatRoom.this );
+                                    Executor thread = Executors.newSingleThreadExecutor();
+                                    thread.execute(() -> {
+                                        mDAO.deleteThisMessage(m);
+                                    });
 
-                builder.setNegativeButton("No" , (btn, obj)->{ //if no is clicked
-
-                }  );
-                builder.setMessage("Do you want to delete this message?");
-                builder.setTitle("Delete");
-
-                builder.setPositiveButton("Yes", (p1, p2)-> {
-                    //if yes is clicked
-                    Executor thread1 = Executors.newSingleThreadExecutor();
-                    thread1.execute(( ) -> {
-                        //delete from database
-                        mDao.deleteThisMessage(toDelete);//which chat message to delete?
-
-                    });
-                    messages.remove(position);//remove from the array list
-                    myAdapter.notifyDataSetChanged();//redraw the list
-
-
-                    //give feedback:anything on screen
-                    Snackbar.make( binding.sendButton , "You deleted the row", Snackbar.LENGTH_LONG)
-                            .setAction("Undo", (btn) -> {
-                                Executor thread2 = Executors.newSingleThreadExecutor();
-                                thread2.execute(( ) -> {
-                                    mDao.insertMessage(toDelete);
-                                });
-
-
-                                messages.add(position, toDelete);
-                                myAdapter.notifyDataSetChanged();//redraw the list
-                            })
-                            .show();
-                });
-
-                builder.create().show(); //this has to be last
-
-
-
+                                    Snackbar.make(binding.getRoot(), "You deleted this message" + position, Snackbar.LENGTH_LONG)
+                                            .setAction("Undo", snackbar -> {
+                                                messages.add(position, m);
+                                                myAdapter.notifyItemInserted(position);
+                                                Executor thread1 = Executors.newSingleThreadExecutor();
+                                                thread1.execute(() -> {
+                                                    mDAO.insertMessage(m);
+                                                });
+                                            })
+                                            .show();
+                                })
+                                .setNegativeButton("No", (dialogI, cl) -> {})
+                                .create()
+                                .show();
+                    }
+                }
                 break;
-
             case R.id.item_2:
-                Toast.makeText(this, "Version 1.0 created by Miriam", Toast.LENGTH_LONG);show();
-
+                Toast.makeText(this, "Version 1.0, created by Miriam", Toast.LENGTH_SHORT).show();
                 break;
         }
-
         return true;
     }
 
