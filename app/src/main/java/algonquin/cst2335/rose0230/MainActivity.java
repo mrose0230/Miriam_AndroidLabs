@@ -25,6 +25,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
 
+import algonquin.cst2335.rose0230.databinding.ActivityMainBinding;
+
 
 public class MainActivity extends AppCompatActivity {
 
