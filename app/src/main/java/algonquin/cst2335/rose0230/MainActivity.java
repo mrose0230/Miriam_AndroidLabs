@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -52,80 +53,84 @@ public class MainActivity extends AppCompatActivity {
             String url = "https://api.openweathermap.org/data/2.5/weather?q=" + URLEncoder.encode(cityName) +
                     "&appid=7e943c97096a9784391a981c4d878b22&units=metric";
 
+            // ...
+
             JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                     response -> {
-                        // this is called if it worked
+                        // This is called if it worked
 
                         try {
                             JSONObject main = response.getJSONObject("main");
                             double temperature = main.getDouble("temp");
 
+                            // Get temperature, minimum, and humidity
                             double minimum = main.getDouble("temp_min");
                             int humidity = main.getInt("humidity");
 
-
+                            // Get weather array
                             JSONArray weather = response.getJSONArray("weather");
                             int arraySize = weather.length();
-                            for(int i = 0; i < arraySize; i++)
-                            {
+                            String conditions = "";
+
+                            for (int i = 0; i < arraySize; i++) {
                                 JSONObject obj = weather.getJSONObject(i);
                                 String iconName = obj.getString("icon");
 
+                                // Get weather description
+                                String description = obj.getString("description");
+                                conditions += description;
+                                if (i < arraySize - 1) {
+                                    conditions += ", ";
+                                }
+
                                 String imageUrl = "http://openweathermap.org/img/w/" + iconName + ".png";
 
-                                File weatherImage = new File(getFilesDir() +"/" + iconName+  ".png");
+                                File weatherImage = new File(getFilesDir() + "/" + iconName + ".png");
 
-                                if(weatherImage.exists()){
+                                if (weatherImage.exists()) {
                                     Bitmap theImage = BitmapFactory.decodeFile(weatherImage.getAbsolutePath());
                                     binding.weatherImage.setImageBitmap(theImage);
-                                }
-                                else {
+                                } else {
                                     ImageRequest imgReq = new ImageRequest(imageUrl,
                                             (Response.Listener<Bitmap>) bitmap -> {
                                                 // Do something with loaded bitmap...
                                                 FileOutputStream fOut = null;
                                                 try {
                                                     fOut = openFileOutput(iconName + ".png", Context.MODE_PRIVATE);
-
                                                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, fOut);
                                                     fOut.flush();
                                                     fOut.close();
-
-
+                                                    binding.weatherImage.setImageBitmap(bitmap);
                                                 } catch (FileNotFoundException e) {
                                                     e.printStackTrace();
-
                                                 } catch (IOException e) {
                                                     throw new RuntimeException(e);
                                                 }
-                                                binding.weatherImage.setImageBitmap(bitmap);
-
-
                                             }, 1024, 1024, ImageView.ScaleType.CENTER, null,
-
                                             (error) -> {
-                                                int i2 = 0;
+                                                Log.e("MainActivity", "ImageRequest Error: " + error.toString());
                                             });
 
                                     queue.add(imgReq);
                                 }
                             }
 
+                            // Update TextViews for temperature and conditions
+                            binding.temperatureText.setText("Temperature: " + temperature + "°C");
+                            binding.conditionsText.setText("Conditions: " + conditions);
 
                         } catch (JSONException e) {
-                            throw new RuntimeException(e);
+                            // Handle JSON parsing error
+                            Log.e("MainActivity", "Error parsing JSON: " + e.getMessage());
                         }
-
-
                     },
                     error -> {
-                        //this is called if there is an error
-                        int i = 0;
+                        // This is called if there is an error
+                        Log.e("MainActivity", "Error: " + error.toString());
                     });
 
+            queue.add(request); // This actually launches the request onResponse, or onErrorResponse will get called
 
-
-            queue.add(request); //this actually launches the request onResponse, or onErrorResponse will get called
 
         });
 
